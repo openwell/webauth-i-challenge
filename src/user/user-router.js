@@ -21,7 +21,19 @@ router.post("/register", auth.validateUser, (req, res) => {
       res.status(500).send(err);
     });
 });
-router.post("/api/login", auth.validateUser, auth.validateUserPassword, (req, res) => {
+
+router.get("/users", (req, res) => {
+    db.getUsers()
+      .then(dbResponse => {
+        return res.status(200).json({
+          data: dbResponse
+        });
+      })
+      .catch(err => {
+        res.status(500).send(err);
+      });
+  });
+router.post("/login", auth.validateUser, auth.validateUserPassword, (req, res) => {
  
   db.getByUsername(req.body.username)
     .then(dbResponse => {
@@ -33,16 +45,6 @@ router.post("/api/login", auth.validateUser, auth.validateUserPassword, (req, re
       res.status(500).send(err);
     });
 });
-router.get("/users", (req, res) => {
-  db.getUsers()
-    .then(dbResponse => {
-      return res.status(200).json({
-        data: dbResponse
-      });
-    })
-    .catch(err => {
-      res.status(500).send(err);
-    });
-});
+
 
 module.exports = router;

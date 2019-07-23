@@ -1,5 +1,5 @@
 const express = require("express");
-const userRoute = require("./user/user-route");
+const userRoute = require("./user/user-router");
 const server = express();
 
 server.use(express.json());
