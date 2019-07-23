@@ -1,4 +1,5 @@
 const md5 = require("md5");
+const db = require("./user-model");
 
 function validateUser(req, res, next) {
   const { username, password } = req.body;
@@ -14,6 +15,15 @@ function validateUser(req, res, next) {
     return res.status(400).json({
       message: "missing required password field"
     });
+  }
+  next();
+}
+async function validateUserPassword (req, res, next) {
+  const { username, password } = req.body;
+  let userData = await db.getByUsername(username);
+  let compareOutput = compareMyBcrypt(password, userData.password)
+  if(!compareOutput){
+   return res.status(401).json({error: 'Incorrect Password'})
   }
   next();
 }
@@ -38,4 +48,4 @@ function compareMyBcrypt(rawPassword, naiveBcryptHash) {
   return this.hash(rawPassword, Number(rounds), salt) === naiveBcryptHash;
 }
 
-module.exports = { validateUser, compareMyBcrypt, myBcrypt };
+module.exports = { validateUser, compareMyBcrypt, myBcrypt, validateUserPassword };

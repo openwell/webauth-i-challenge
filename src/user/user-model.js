@@ -3,7 +3,8 @@ const db = require("../data/dbConfig");
 module.exports = {
   getUsers,
   authUser,
-  createUser
+  createUser,
+  getByUsername
 };
 
 function getUsers() {
@@ -19,6 +20,11 @@ function findById(id) {
     .where({ id })
     .first();
 }
+function getByUsername(username) {
+    return db("users")
+      .where({ username })
+      .first();
+  }
 
 function createUser(data) {
   return db("users")

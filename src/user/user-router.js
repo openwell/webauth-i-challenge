@@ -1,29 +1,32 @@
 const express = require("express");
 const db = require("./user-model");
-const validateMiddleware = require("./user-middleware");
+const auth = require("./user-middleware");
 
 const router = express.Router();
 
-router.get("/register", validateMiddleware, (req, res) => {
-  let data = req.body;
+router.post("/register", auth.validateUser, (req, res) => {
+  const { username, password } = req.body;
 
+  const data = {
+    username: username,
+    password: auth.myBcrypt(password, 10)
+  };
   db.createUser(data)
     .then(dbResponse => {
       return res.status(200).json({
-        data: dbResponse 
+        data: dbResponse
       });
     })
     .catch(err => {
       res.status(500).send(err);
     });
 });
-router.get("/api/login", validateMiddleware, (req, res) => {
-  let data = req.body;
-
-  db.authUser(data)
-    .then(dbResponse  => {
+router.post("/api/login", auth.validateUser, auth.validateUserPassword, (req, res) => {
+ 
+  db.getByUsername(req.body.username)
+    .then(dbResponse => {
       return res.status(200).json({
-        data: dbResponse 
+        data: dbResponse
       });
     })
     .catch(err => {
@@ -32,9 +35,9 @@ router.get("/api/login", validateMiddleware, (req, res) => {
 });
 router.get("/users", (req, res) => {
   db.getUsers()
-    .then(dbResponse  => {
+    .then(dbResponse => {
       return res.status(200).json({
-        data: dbResponse 
+        data: dbResponse
       });
     })
     .catch(err => {
