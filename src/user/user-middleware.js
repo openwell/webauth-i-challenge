@@ -1,3 +1,5 @@
+const md5 = require("md5");
+
 function validateUser(req, res, next) {
   const { username, password } = req.body;
   if (!req.body) {
@@ -16,5 +18,24 @@ function validateUser(req, res, next) {
   next();
 }
 
+function myBcrypt(
+  password,
+  cycle = 10,
+  salt = new Date().getTime().toString()
+) {
+  let hashed = md5(`${password}${salt}+${randomSalt}`);
+  for (let i = 0; i < cycle; i++) {
+    hashed = md5(hashed);
+  }
+  const encodedSalt = Buffer.from(salt).toString("base64");
+  const encodedHash = Buffer.from(hashed).toString("base64");
+  return `md5$${cycle}$${encodedSalt}$${encodedHash}`;
+}
 
-module.exports = validateUser;
+function compareMyBcrypt(rawPassword, naiveBcryptHash) {
+  const [, rounds, encodedSalt] = naiveBcryptHash.split("$");
+  const salt = Buffer.from(encodedSalt, "base64").toString("ascii");
+  return this.hash(rawPassword, Number(rounds), salt) === naiveBcryptHash;
+}
+
+module.exports = { validateUser, compareMyBcrypt, myBcrypt };
