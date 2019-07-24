@@ -26,11 +26,11 @@ async function validateUserPassword(req, res, next) {
     if (!compareOutput) {
       return res.status(401).json({ error: "Incorrect Password" });
     }
+    req.session.user = userData;
+    next();
   } catch (err) {
     return res.status(401).json({ error: "Incorrect Username" });
   }
-
-  next();
 }
 
 function myBcrypt(
@@ -53,9 +53,19 @@ function compareMyBcrypt(rawPassword, naiveBcryptHash) {
   return myBcrypt(rawPassword, Number(rounds), salt) === naiveBcryptHash;
 }
 
+function restriction(req, res, next) {
+  if (req.session && req.session.user) {
+    console.log(req.session)
+    next();
+  } else {
+    return res.status(400).json({ message: "No credentials provided" });
+  }
+}
+
 module.exports = {
   validateUser,
   compareMyBcrypt,
   myBcrypt,
-  validateUserPassword
+  validateUserPassword,
+  restriction
 };

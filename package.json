@@ -18,7 +18,10 @@
   },
   "homepage": "https://github.com/openwell/webauth-i-challenge#readme",
   "dependencies": {
+    "connect-session-knex": "^1.4.0",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
+    "express-session": "^1.16.2",
     "knex": "^0.19.0",
     "knex-cleaner": "^1.2.1",
     "md5": "^2.2.1",
